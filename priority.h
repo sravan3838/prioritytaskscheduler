@@ -1,12 +1,10 @@
 #ifndef PRIORITY_H
 #define PRIORITY_H
-
-double calculateImportanceScore(int importance);
-double calculateUrgencyScore(double daysRemaining);
-double calculateLeadTimeRisk(double duration, double hoursRemaining);
-double calculatePriorityScore(int importance, double daysRemaining,
-                              double duration, double hoursRemaining);
-
-void updateAllPriorities();
-
+#include "task.h"
+double calculateimportancescore(struct Task task);
+double calculateurgencyscore(struct Task task);
+double calculateleadtimerisk(struct Task task);
+double calculatepriority(struct Task task);
+void updateallpriorities();
 #endif
+
