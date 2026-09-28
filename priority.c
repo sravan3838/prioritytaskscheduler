@@ -1,49 +1,59 @@
-#include <stdio.h>
-#include <math.h>
+#include "scheduler.h"
 #include "task.h"
 #include "priority.h"
-double calculateImportanceScore(int importance)
+double calculateimportancescore(struct Task task)
 {
-    return importance * 20.0;
+    return task.importance * 20.0;
 }
-double calculateUrgencyScore(double daysRemaining)
+double calculateurgencyscore(struct Task task)
 {
-    if(daysRemaining < 0)
+    double daysRemaining;
+    daysRemaining=calculateDaysRemaining(task);
+    if(daysRemaining <=0)
     {
-        daysRemaining = 0;
+       return 100.0;
     }
 
     return 100.0 / (1.0 + daysRemaining);
 }
-double calculateLeadTimeRisk(double duration, double hoursRemaining)
+double calculateleadtimerisk(struct Task task)
 {
-    double executionRatio;
-
+    double executionratio;
+    double hoursRemaining;
+    hoursRemaining=calculateHoursRemaining(task);
     if(hoursRemaining <= 0)
     {
         return 100.0;
     }
-
-    executionRatio = duration / hoursRemaining;
-
-    if(executionRatio >= 2.0)
+    executionratio = task.duration / hoursRemaining;
+    if(executionratio >= 2.0)
     {
         return 100.0;
     }
-
-    return executionRatio * 50.0;
+    return executionratio * 50.0;
 }
-double calculatePriorityScore(int importance, double daysRemaining,
-                              double duration, double hoursRemaining)
+double calculatepriority(struct Task task)
 {
-    double importanceScore;
-    double urgencyScore;
-    double leadTimeRisk;
-
-    importanceScore = calculateImportanceScore(importance);
-    urgencyScore = calculateUrgencyScore(daysRemaining);
-    leadTimeRisk = calculateLeadTimeRisk(duration, hoursRemaining);
-
-    return importanceScore + urgencyScore + leadTimeRisk;
+    double importancescore;
+    double urgencyscore;
+    double leadtimerisk;
+    importancescore = calculateimportancescore(task);
+    urgencyscore = calculateurgencyscore(task);
+    leadtimerisk = calculateleadtimerisk(task);
+    return importancescore + urgencyscore + leadtimerisk;
 }
-char deadline[20];
+void updateallpriorities()
+{
+    int i;
+    for(i=0;i<taskcount;i++)
+    {
+        if(tasks[i].completed==1)
+        {
+            tasks[i].priority=0.0;
+        }
+        else
+        {
+            tasks[i].priority=calculatepriority(tasks[i]);
+        }
+    }
+}
