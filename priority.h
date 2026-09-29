@@ -7,4 +7,3 @@ double calculateleadtimerisk(struct Task task);
 double calculatepriority(struct Task task);
 void updateallpriorities();
 #endif
-
