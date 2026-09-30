@@ -1,5 +1,6 @@
 
 #include "task.h"
+#include "scheduler.h"
 #include "priority.h"
 double calculateimportancescore(struct Task task)
 {
