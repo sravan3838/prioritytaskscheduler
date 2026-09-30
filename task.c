@@ -1,10 +1,12 @@
 #include<stdio.h>
 #include<string.h>
 #include "task.h"
+#include "scheduler.h"
 struct Task tasks[maxtasks];
 int taskcount=0;
 void addtask()
 {
+    int valid;
     if(taskcount>=maxtasks)
     {
         printf("Task limit reached.Cannot add more tasks.\n");
@@ -23,8 +25,15 @@ void addtask()
     }
     printf("Enter task name:");
     scanf(" %99[^\n]",tasks[taskcount].name);
+    do{
     printf("Enter Deadline (DD-MM-YYYY HH:MM):");
     scanf(" %19[^\n]",tasks[taskcount].deadline);
+    valid=isvaliddeadline(tasks[taskcount].deadline);
+    if(valid==0)
+    {
+        printf("Invalid deadline.Use DD-MM-YYYY HH:MM\n");
+    }
+    }while(valid==0);
     printf("Enter Importance (1-5):");
     scanf("%d",&tasks[taskcount].importance);
     while(tasks[taskcount].importance<1||tasks[taskcount].importance>5)
@@ -102,14 +111,15 @@ void searchtask(int id)
             printf("Status:Pending\n");
         }
         printf("-----------------------------\n");
-        }
         return;
+        }
+
     }
     printf("Task with %d ID not found\n",id);
 }
 void updatetask(int id)
 {
-    int i;
+    int i,valid;
     for(i=0;i<taskcount;i++)
     {
         if(tasks[i].id==id)
@@ -133,8 +143,15 @@ void updatetask(int id)
                     printf("New task name updated\n");
                     break;
                 case 2:
-                    printf("Enter new deadline (DD-MM-YYYY HH:MM):");
-                    scanf(" %19[^\n]",tasks[i].deadline);
+                    do{
+                        printf("Enter Deadline (DD-MM-YYYY HH:MM):");
+                        scanf(" %19[^\n]",tasks[taskcount].deadline);
+                        valid=isvaliddeadline(tasks[taskcount].deadline);
+                        if(valid==0)
+                        {
+                            printf("Invalid deadline.Use DD-MM-YYYY HH:MM\n");
+                        }
+                        }while(valid==0);
                     printf("Deadline updated\n");
                     break;
                 case 3:
