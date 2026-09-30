@@ -5,32 +5,41 @@
 
 void showreport()
 {
-    int done = 0, open = 0, late = 0, i, lv;
-    double hrsleft = 0, hrsdone = 0, impsum = 0;
+    int done = 0, open = 0, late = 0, i;
+    double workhrsleft = 0, hrsdone = 0, impsum = 0;
 
-    if(taskcount == 0) { printf("no tasks yet\n"); return; }
+    if(taskcount == 0)
+    {
+        printf("no tasks yet\n");
+        return;
+    }
 
     for(i = 0; i < taskcount; i++)
     {
-        lv = tasks[i].importance;
-        impsum += lv;
+        impsum+= tasks[i].importance;
 
-        if(tasks[i].completed) { done++; hrsdone += tasks[i].duration; }
+
+        if(tasks[i].completed)
+        {
+            done++;
+            hrsdone += tasks[i].duration;
+        }
         else
         {
             open++;
-            hrsleft += tasks[i].duration;
-            if(isOverdue(tasks[i])) late++;
+            workhrsleft += tasks[i].duration;
+            if(isOverdue(tasks[i]))
+                late++;
         }
     }
 
-    printf("\n== report ==\n");
-    printf("total   : %d\n", taskcount);
-    printf("done    : %d\n", done);
-    printf("open    : %d\n", open);
-    printf("late    : %d\n", late);
-    printf("rate    : %.1f%%\n", 100.0 * done / taskcount);
-    printf("hrs done: %.1f\n", hrsdone);
-    printf("hrs left: %.1f\n", hrsleft);
-    printf("avg lvl : %.2f\n", impsum / taskcount);
+    printf("\n==Productivity Report ==\n");
+    printf("total tasks    : %d\n", taskcount);
+    printf("completed      : %d\n", done);
+    printf("open           : %d\n", open);
+    printf("late           : %d\n", late);
+    printf("Completion rate: %.1f%%\n", 100.0 * done / taskcount);
+    printf("Hours done     : %.1f\n", hrsdone);
+    printf("Work hours left: %.1f\n",workhrsleft);
+    printf("average lvl : %.2f\n", impsum / taskcount);
 }
