@@ -26,6 +26,10 @@ void heapifyUp(int index)
 }
 void insertTask(struct Task task)
 {
+    if(task.completed==1)
+    {
+        return;
+    }
     if(heapsize>=maxtasks)
     {
         printf("Heap is full..cannot insert task\n");
@@ -98,7 +102,11 @@ void buildHeap()
     heapsize=taskcount;
     for(i=0;i<taskcount;i++)
     {
-        heap[i]=tasks[i];
+       if(tasks[i].completed==0)
+       {
+           heap[heapsize]=tasks[i];
+           heapsize++;
+       }
     }
     for(i=(heapsize/2)-1;i>=0;i--)
     {
