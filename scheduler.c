@@ -4,40 +4,51 @@
 #include "task.h"
 #include "heap.h"
 #include "scheduler.h"
-
-
+static int parseDeadline(const char *deadlineText,time_t*result)
+{
+    struct tm deadline={0};
+    int day,month,year,hour,minute;
+    if(sscanf(deadlineText,"%d-%d-%d %d:%d",&day,&month,&year,&hour,&minute)!=5)
+    {
+        return 0;
+    }
+    if(month<1 || month>12|| day<1 ||day>31 ||hour<0||hour>23 ||minute<0 ||minute>59)
+    {
+        return 0;
+    }
+    deadline.tm_mday=day;
+    deadline.tm_mon=month-1;
+    deadline.tm_year=year-1900;
+    deadline.tm_hour=hour;
+    deadline.tm_min=minute;
+    deadline.tm_sec=0;
+    deadline.tm_isdst=-1;
+    *result=mktime(&deadline);
+    if(*result==(time_t)-1)
+    {
+        return 0;
+    }
+    if(deadline.tm_mday!=day || deadline.tm_mon!=month-1 || deadline.tm_year!=year-1900 || deadline.tm_hour!=hour || deadline.tm_min!=minute)
+    {
+        return 0;
+    }
+    return 1;
+}
+int isvaliddeadline(const char *deadlineText)
+{
+    time_t deadlineTime;
+    return parseDeadline(deadlineText,&deadlineTime);
+}
 double calculateHoursRemaining(struct Task task)
 {
-    struct tm deadline = {0};
     time_t currentTime;
     time_t deadlineTime;
-
-    int day, month, year;
-    int hour, minute;
-
-    if (sscanf(task.deadline, "%d-%d-%d %d:%d",
-               &day, &month, &year, &hour, &minute) != 5)
+    if (parseDeadline(task.deadline,&deadlineTime)==0)
     {
         return 0.0;
     }
-
-    deadline.tm_mday = day;
-    deadline.tm_mon = month - 1;
-    deadline.tm_year = year - 1900;
-    deadline.tm_hour = hour;
-    deadline.tm_min = minute;
-    deadline.tm_sec = 0;
-    deadline.tm_isdst = -1;
-
-    deadlineTime = mktime(&deadline);
-    currentTime = time(NULL);
-
-    if (deadlineTime == (time_t)-1)
-    {
-        return 0.0;
-    }
-
-    return difftime(deadlineTime, currentTime) / 3600.0;
+    currentTime=time(NULL);
+    return difftime(deadlineTime,currentTime)/3600.0;
 }
 
 
@@ -57,7 +68,7 @@ int isOverdue(struct Task task)
 
     hoursRemaining = calculateHoursRemaining(task);
 
-    if (hoursRemaining <= 0)
+    if (hoursRemaining < 0)
     {
         return 1;
     }
@@ -72,7 +83,7 @@ struct Task getNextTask()
 }
 
 
-void merge(struct Task arr[], int left, int middle, int right)
+static void merge(struct Task arr[], int left, int middle, int right)
 {
     struct Task temp[maxtasks];
 
@@ -109,36 +120,32 @@ void merge(struct Task arr[], int left, int middle, int right)
         j++;
         k++;
     }
-
     for (i = left; i <= right; i++)
     {
         arr[i] = temp[i];
     }
 }
-
-
-void mergeSort(struct Task arr[], int left, int right)
+static void mergeSort(struct Task arr[], int left, int right)
 {
     int middle;
-
     if (left < right)
     {
         middle = left + (right - left) / 2;
-
         mergeSort(arr, left, middle);
         mergeSort(arr, middle + 1, right);
-
         merge(arr, left, middle, right);
     }
 }
-
-
 void sortTasksByPriority()
 {
+    if(taskcount==0)
+    {
+        printf("No tasks available to sort.\n");
+        return;
+    }
     if (taskcount > 1)
     {
         mergeSort(tasks, 0, taskcount - 1);
     }
-
     printf("Tasks sorted by priority.\n");
 }
