@@ -6,7 +6,7 @@
 double calculateHoursRemaining(struct Task task);
 double calculateDaysRemaining(struct Task task);
 int isOverdue(struct Task task);
-
+int isvaliddeadline(const char *deadlineText);
 struct Task getNextTask();
 
 void sortTasksByPriority();
